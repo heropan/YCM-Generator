@@ -41,7 +41,7 @@ def main():
     parser.add_argument("-x", "--language", choices=["c", "c++"], help="Only output flags for the given language. This defaults to whichever language has its compiler invoked the most.")
     parser.add_argument("--out-of-tree", action="store_true", help="Build autotools projects out-of-tree. This is a no-op for other project types.")
     parser.add_argument("--qt-version", choices=["4", "5"], default="5", help="Use the given Qt version for qmake. (Default: 5)")
-    parser.add_argument("-e", "--preserve-environment", action="store_true", help="Pass environment variables to build processes.")
+    parser.add_argument("-e", "--preserve-environment", default='true', action="store_true", help="Pass environment variables to build processes.")
     parser.add_argument("PROJECT_DIR", help="The root directory of the project.")
     args = vars(parser.parse_args())
     project_dir = os.path.abspath(args["PROJECT_DIR"])
@@ -131,10 +131,10 @@ def main():
                 cxx_build_log.delete = False
                 return 3
 
-            elif(c_count > cxx_count):
-                lang, flags = ("c", c_flags)
-            else:
+            elif(cxx_count > 0):
                 lang, flags = ("c++", cxx_flags)
+            else:
+                lang, flags = ("c", c_flags)
 
             generate_conf(["-x", lang] + flags, config_file)
             print("Created {} config file with {} {} flags".format(output_format.upper(), len(flags), lang.upper()))
